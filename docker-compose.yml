@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: statements-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: statements_db
+      POSTGRES_USER: statements_user
+      POSTGRES_PASSWORD: statements_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - statements-postgres-data:/var/lib/postgresql/data
+    networks:
+      - statements-network
+
+  statements-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: statements-app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/statements_db
+      SPRING_DATASOURCE_USERNAME: statements_user
+      SPRING_DATASOURCE_PASSWORD: statements_password
+      STATEMENT_STORAGE_LOCATION: /app/generated-statements
+      STATEMENT_DOWNLOAD_EXPIRY_MINUTES: 1
+      STATEMENT_DOWNLOAD_JWT_SECRET: f8Kz7vQ2pL9xR6mN4sT1yWcJ3aE5bU0HqD8ZrVgXkP7nC2uM9jL4tYwS1oA6eBfH
+    volumes:
+      - statements-generated-files:/app/generated-statements
+    networks:
+      - statements-network
+
+volumes:
+  statements-postgres-data:
+  statements-generated-files:
+
+networks:
+  statements-network:
+    driver: bridge

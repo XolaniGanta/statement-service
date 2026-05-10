@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+statement:
+  storage:
+    location: ${STATEMENT_STORAGE_LOCATION:generated-statements}
+  download:
+    expiry-minutes: ${STATEMENT_DOWNLOAD_EXPIRY_MINUTES:1}
+    jwt-secret: ${STATEMENT_DOWNLOAD_JWT_SECRET:f8Kz7vQ2pL9xR6mN4sT1yWcJ3aE5bU0HqD8ZrVgXkP7nC2uM9jL4tYwS1oA6eBfH}

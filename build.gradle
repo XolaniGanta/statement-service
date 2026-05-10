@@ -1,0 +1,44 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.6'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.ganta.microservices'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(25)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	runtimeOnly 'org.postgresql:postgresql'
+	testCompileOnly 'org.projectlombok:lombok'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	// Source: https://mvnrepository.com/artifact/com.github.librepdf/openpdf
+	implementation("com.github.librepdf:openpdf:3.0.4")
+	//Postgresql
+	implementation('org.postgresql:postgresql:42.7.7')
+	// Source: https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
+	implementation("io.jsonwebtoken:jjwt:0.13.0")
+}
+
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

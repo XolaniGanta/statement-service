@@ -1,0 +1,176 @@
+[
+  {
+    "accountNumber": 100001,
+    "customerId": "customer-001",
+    "periodStart": "2026-03-01",
+    "periodEnd": "2026-03-31",
+    "openingBalance": 1500.00,
+    "closingBalance": 1720.00,
+    "currency": "ZAR",
+    "transactions": [
+      {
+        "timestamp": "2026-03-02T09:10:00",
+        "amount": 800.00,
+        "type": "CREDIT",
+        "description": "Salary payment",
+        "reference": "SAL-002"
+      },
+      {
+        "timestamp": "2026-03-06T13:25:00",
+        "amount": 200.00,
+        "type": "DEBIT",
+        "description": "Online shopping",
+        "reference": "ECOM-001"
+      },
+      {
+        "timestamp": "2026-03-10T18:40:00",
+        "amount": 150.00,
+        "type": "DEBIT",
+        "description": "Electricity bill",
+        "reference": "UTIL-001"
+      },
+      {
+        "timestamp": "2026-03-15T11:00:00",
+        "amount": 120.00,
+        "type": "DEBIT",
+        "description": "Restaurant",
+        "reference": "POS-002"
+      }
+    ]
+  },
+  {
+    "accountNumber": 100003,
+    "customerId": "customer-003",
+    "periodStart": "2026-01-01",
+    "periodEnd": "2026-01-31",
+    "openingBalance": 500.00,
+    "closingBalance": 950.00,
+    "currency": "ZAR",
+    "transactions": [
+      {
+        "timestamp": "2026-01-04T07:45:00",
+        "amount": 600.00,
+        "type": "CREDIT",
+        "description": "Freelance payment",
+        "reference": "FRL-001"
+      },
+      {
+        "timestamp": "2026-01-11T16:20:00",
+        "amount": 100.00,
+        "type": "DEBIT",
+        "description": "Fuel",
+        "reference": "FUEL-001"
+      },
+      {
+        "timestamp": "2026-01-18T15:10:00",
+        "amount": 50.00,
+        "type": "DEBIT",
+        "description": "Coffee shop",
+        "reference": "POS-003"
+      }
+    ]
+  },
+  {
+    "accountNumber": 100002,
+    "customerId": "customer-002",
+    "periodStart": "2026-02-01",
+    "periodEnd": "2026-02-28",
+    "openingBalance": 1800.00,
+    "closingBalance": 2100.00,
+    "currency": "ZAR",
+    "transactions": [
+      {
+        "timestamp": "2026-02-03T10:00:00",
+        "amount": 500.00,
+        "type": "CREDIT",
+        "description": "Bonus payment",
+        "reference": "BON-001"
+      },
+      {
+        "timestamp": "2026-02-07T12:30:00",
+        "amount": 100.00,
+        "type": "DEBIT",
+        "description": "Groceries",
+        "reference": "POS-004"
+      },
+      {
+        "timestamp": "2026-02-20T09:15:00",
+        "amount": 100.00,
+        "type": "DEBIT",
+        "description": "Streaming subscription",
+        "reference": "SUB-001"
+      }
+    ]
+  },
+  {
+    "accountNumber": 100004,
+    "customerId": "customer-004",
+    "periodStart": "2026-01-01",
+    "periodEnd": "2026-01-31",
+    "openingBalance": 3000.00,
+    "closingBalance": 2550.00,
+    "currency": "ZAR",
+    "transactions": [
+      {
+        "timestamp": "2026-01-02T14:00:00",
+        "amount": 200.00,
+        "type": "DEBIT",
+        "description": "ATM withdrawal",
+        "reference": "ATM-002"
+      },
+      {
+        "timestamp": "2026-01-09T10:30:00",
+        "amount": 150.00,
+        "type": "DEBIT",
+        "description": "Insurance payment",
+        "reference": "INS-001"
+      },
+      {
+        "timestamp": "2026-01-20T19:00:00",
+        "amount": 100.00,
+        "type": "DEBIT",
+        "description": "Dining",
+        "reference": "POS-005"
+      }
+    ]
+  },
+  {
+    "accountNumber": 100001,
+    "customerId": "customer-001",
+    "periodStart": "2026-04-01",
+    "periodEnd": "2026-04-30",
+    "openingBalance": 1720.00,
+    "closingBalance": 2100.00,
+    "currency": "ZAR",
+    "transactions": [
+      {
+        "timestamp": "2026-04-01T08:00:00",
+        "amount": 900.00,
+        "type": "CREDIT",
+        "description": "Salary payment",
+        "reference": "SAL-003"
+      },
+      {
+        "timestamp": "2026-04-05T17:45:00",
+        "amount": 200.00,
+        "type": "DEBIT",
+        "description": "Clothing purchase",
+        "reference": "ECOM-002"
+      },
+      {
+        "timestamp": "2026-04-12T11:30:00",
+        "amount": 120.00,
+        "type": "DEBIT",
+        "description": "Gym membership",
+        "reference": "SUB-002"
+      },
+      {
+        "timestamp": "2026-04-22T09:20:00",
+        "amount": 200.00,
+        "type": "DEBIT",
+        "description": "Car maintenance",
+        "reference": "AUTO-001"
+      }
+    ]
+  }
+]

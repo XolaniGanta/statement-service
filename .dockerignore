@@ -1,0 +1,10 @@
+.gradle
+build
+out
+target
+.idea
+*.iml
+.DS_Store
+generated-statements
+.git
+.gitignore
