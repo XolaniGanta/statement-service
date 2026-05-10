@@ -1,7 +1,8 @@
-package com.ganta.microservices.statements.service;
+package com.ganta.microservices.statements.service.impl;
 
 import com.ganta.microservices.statements.pojo.TransactionItems;
 import com.ganta.microservices.statements.pojo.Transactions;
+import com.ganta.microservices.statements.service.StatementGenerateService;
 import org.openpdf.text.*;
 import org.openpdf.text.pdf.PdfPCell;
 import org.openpdf.text.pdf.PdfPTable;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 
 @Service
-public class PdfGenerateServiceImpl implements PdfGenerateService{
+public class StatementGenerateServiceImpl implements StatementGenerateService {
     @Override
     public byte[] generatePdf(Transactions transactions) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {

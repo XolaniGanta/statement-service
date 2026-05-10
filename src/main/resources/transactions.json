@@ -172,5 +172,44 @@
         "reference": "AUTO-001"
       }
     ]
+  },
+  {
+    "accountNumber": 100007,
+    "customerId": "customer-001",
+    "periodStart": "2026-04-01",
+    "periodEnd": "2026-04-30",
+    "openingBalance": 1720.00,
+    "closingBalance": 2100.00,
+    "currency": "ZAR",
+    "transactions": [
+      {
+        "timestamp": "2026-04-01T08:00:00",
+        "amount": 900.00,
+        "type": "CREDIT",
+        "description": "Salary payment",
+        "reference": "SAL-003"
+      },
+      {
+        "timestamp": "2026-04-05T17:45:00",
+        "amount": 200.00,
+        "type": "DEBIT",
+        "description": "Clothing purchase",
+        "reference": "ECOM-002"
+      },
+      {
+        "timestamp": "2026-04-12T11:30:00",
+        "amount": 120.00,
+        "type": "DEBIT",
+        "description": "Gym membership",
+        "reference": "SUB-002"
+      },
+      {
+        "timestamp": "2026-04-22T09:20:00",
+        "amount": 200.00,
+        "type": "DEBIT",
+        "description": "Car maintenance",
+        "reference": "AUTO-001"
+      }
+    ]
   }
 ]

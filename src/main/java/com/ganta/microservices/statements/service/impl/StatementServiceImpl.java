@@ -1,11 +1,16 @@
-package com.ganta.microservices.statements.service;
+package com.ganta.microservices.statements.service.impl;
 
 
+import com.ganta.microservices.statements.exception.StatementErrorCode;
+import com.ganta.microservices.statements.exception.StatementException;
 import com.ganta.microservices.statements.model.Statement;
 import com.ganta.microservices.statements.pojo.GenerateStatementRequest;
+import com.ganta.microservices.statements.pojo.GenerateStatementResponse;
 import com.ganta.microservices.statements.pojo.StatementDownloadDto;
 import com.ganta.microservices.statements.pojo.Transactions;
 import com.ganta.microservices.statements.repository.StatementRepository;
+import com.ganta.microservices.statements.service.StatementGenerateService;
+import com.ganta.microservices.statements.service.StatementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +34,7 @@ import java.util.UUID;
 public class StatementServiceImpl implements StatementService {
 
     private final StatementRepository statementRepository;
-    private final PdfGenerateService pdfGenerateService;
+    private final StatementGenerateService statementGenerateService;
     private final TransactionServiceImpl transactionService;
     private final StatementDownloadJwtService statementDownloadJwtService;
 
@@ -37,22 +42,15 @@ public class StatementServiceImpl implements StatementService {
     private String statementStorageLocation;
 
     @Override
-    public Statement generateStatement(GenerateStatementRequest request) {
+    public GenerateStatementResponse generateStatement(GenerateStatementRequest request) {
+        log.info("generateStatement - method entered - accountNumber: {}", request.getAccountNumber());
 
-        Transactions transactions = transactionService.getTransactions(
-                request.getAccountNumber(),
-                request.getStartDate(),
-                request.getEndDate()
-        );
+        Transactions transactions = transactionService.getTransactions(request.getAccountNumber(), request.getStartDate(), request.getEndDate());
 
-        boolean statementExists = statementRepository.existsByAccountNumberAndPeriodStartAndPeriodEnd(
-                request.getAccountNumber(),
-                request.getStartDate(),
-                request.getEndDate()
-        );
+        boolean statementExists = statementRepository.existsByAccountNumberAndPeriodStartAndPeriodEnd(request.getAccountNumber(), request.getStartDate(), request.getEndDate());
 
         if (statementExists) {
-            throw new RuntimeException("Statement already exists for this period");
+            throw new StatementException(StatementErrorCode.STATEMENT_ALREADY_EXISTS);
         }
 
         return generateStatementFromTransactions(transactions);
@@ -60,8 +58,10 @@ public class StatementServiceImpl implements StatementService {
 
     @Override
     public StatementDownloadDto downloadStatement(Long accountNumber, LocalDate periodStart, LocalDate periodEnd) {
+        log.info("downloadStatement - method entered - accountNumber: {}, periodStart: {}, periodEnd: {}", accountNumber, periodStart, periodEnd);
+
         Statement statement = statementRepository.findByAccountNumberAndPeriodStartAndPeriodEnd(accountNumber, periodStart, periodEnd)
-                .orElseThrow(() -> new RuntimeException("Statement is not available for this period"));
+                .orElseThrow(() -> new StatementException(StatementErrorCode.STATEMENT_NOT_AVAILABLE));
 
         String token = statementDownloadJwtService.generateToken(statement.getStatementId());
         LocalDateTime expiresAt = LocalDateTime.ofInstant(
@@ -77,22 +77,23 @@ public class StatementServiceImpl implements StatementService {
                 .queryParam("token", token)
                 .toUriString();
 
+        log.info("downloadStatement - method returned - statementId: {}", statement.getStatementId());
         return new StatementDownloadDto(statement.getStatementId(), downloadUrl, expiresAt);
     }
 
     @Override
     public Resource getStatementPdf(UUID statementId, String token) {
-        if (!statementDownloadJwtService.isValidForStatement(statementId, token)) {
-            throw new RuntimeException("Statement download link has expired or is invalid");
-        }
+        log.info("getStatementPdf - method entered - statementId: {}", statementId);
+
+        statementDownloadJwtService.validateForStatement(statementId, token);
 
         Statement statement = statementRepository.findByStatementId(statementId)
-                .orElseThrow(() -> new RuntimeException("Statement not found"));
+                .orElseThrow(() -> new StatementException(StatementErrorCode.STATEMENT_NOT_FOUND));
 
-        FileSystemResource resource = new FileSystemResource(statement.getS3Key());
+        FileSystemResource resource = new FileSystemResource(statement.getFilePath());
 
         if (!resource.exists()) {
-            throw new RuntimeException("Statement PDF file is not available");
+            throw new StatementException(StatementErrorCode.STATEMENT_PDF_NOT_AVAILABLE);
         }
 
         return resource;
@@ -100,7 +101,7 @@ public class StatementServiceImpl implements StatementService {
 
     @Override
     public void generateMonthlyStatements() {
-        log.info("Monthly statement batch started");
+        log.info("generateMonthlyStatements - monthly statement batch started");
 
         List<Transactions> allTransactions = transactionService.getAllTransactions();
 
@@ -127,10 +128,11 @@ public class StatementServiceImpl implements StatementService {
         log.info("Monthly statement batch completed");
     }
 
-    private Statement generateStatementFromTransactions(Transactions transactions) {
+    private GenerateStatementResponse generateStatementFromTransactions(Transactions transactions) {
+        log.info("generateStatementFromTransactions - method entered");
         UUID statementId = UUID.randomUUID();
 
-        byte[] pdfBytes = pdfGenerateService.generatePdf(transactions);
+        byte[] pdfBytes = statementGenerateService.generatePdf(transactions);
 
         try {
             Path storageDirectory = Path.of(statementStorageLocation);
@@ -138,23 +140,13 @@ public class StatementServiceImpl implements StatementService {
 
             Path pdfPath = storageDirectory.resolve(statementId + ".pdf");
 
-            Files.write(
-                    pdfPath,
-                    pdfBytes,
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.TRUNCATE_EXISTING
-            );
+            Files.write(pdfPath, pdfBytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
-            Statement statement = Statement.builder()
-                    .statementId(statementId)
-                    .accountNumber(transactions.getAccountNumber())
-                    .periodStart(transactions.getPeriodStart())
-                    .periodEnd(transactions.getPeriodEnd())
-                    .s3Key(pdfPath.toString())
-                    .generatedAt(LocalDateTime.now())
-                    .build();
+            Statement statement = buildStatement(transactions, pdfPath.toString(), statementId);
 
-            Statement savedStatement = statementRepository.save(statement);
+            statementRepository.save(statement);
+
+            GenerateStatementResponse statementResponse = buildGenerateStatementResponse(transactions);
 
             log.info(
                     "Generated monthly statement for accountNumber={}, statementId={}, periodStart={}, periodEnd={}",
@@ -164,7 +156,7 @@ public class StatementServiceImpl implements StatementService {
                     transactions.getPeriodEnd()
             );
 
-            return savedStatement;
+            return statementResponse;
 
         } catch (Exception e) {
             log.error(
@@ -174,8 +166,26 @@ public class StatementServiceImpl implements StatementService {
                     transactions.getPeriodEnd(),
                     e
             );
-            throw new RuntimeException("Failed to store generated statement PDF", e);
+            throw new StatementException(StatementErrorCode.STATEMENT_PDF_STORAGE_FAILED, e);
         }
+    }
+
+    private static Statement buildStatement(Transactions transactions, String filePath, UUID statementId) {
+        return Statement.builder()
+                .statementId(statementId)
+                .accountNumber(transactions.getAccountNumber())
+                .periodStart(transactions.getPeriodStart())
+                .periodEnd(transactions.getPeriodEnd())
+                .filePath(filePath)
+                .generatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    private static GenerateStatementResponse buildGenerateStatementResponse(Transactions transactions){
+        return GenerateStatementResponse.builder()
+                .accountNumber(transactions.getAccountNumber())
+                .message("Statement generated successfully")
+                .build();
     }
 
 }

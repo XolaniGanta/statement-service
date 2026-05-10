@@ -1,6 +1,10 @@
-package com.ganta.microservices.statements.service;
+package com.ganta.microservices.statements.service.impl;
 
+import com.ganta.microservices.statements.exception.StatementErrorCode;
+import com.ganta.microservices.statements.exception.StatementException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,27 +44,33 @@ public class StatementDownloadJwtService {
         return claims.getExpiration().toInstant();
     }
 
-    public boolean isValidForStatement(UUID statementId, String token) {
-        try {
-            Claims claims = parseClaims(token);
+    public void validateForStatement(UUID statementId, String token) {
+        Claims claims = parseClaims(token);
 
-            String tokenType = claims.get("type", String.class);
-            String tokenStatementId = claims.get("statementId", String.class);
+        String tokenType = claims.get("type", String.class);
+        String tokenStatementId = claims.get("statementId", String.class);
 
-            return "statement-download".equals(tokenType)
-                    && statementId.toString().equals(tokenStatementId)
-                    && statementId.toString().equals(claims.getSubject());
-        } catch (Exception e) {
-            return false;
+        boolean validToken = "statement-download".equals(tokenType)
+                && statementId.toString().equals(tokenStatementId)
+                && statementId.toString().equals(claims.getSubject());
+
+        if (!validToken) {
+            throw new StatementException(StatementErrorCode.INVALID_DOWNLOAD_LINK);
         }
     }
 
     private Claims parseClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            throw new StatementException(StatementErrorCode.LINK_EXPIRED, e);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new StatementException(StatementErrorCode.INVALID_DOWNLOAD_LINK, e);
+        }
     }
 
     private SecretKey getSigningKey() {

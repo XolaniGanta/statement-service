@@ -2,6 +2,7 @@ package com.ganta.microservices.statements.controller;
 
 import com.ganta.microservices.statements.model.Statement;
 import com.ganta.microservices.statements.pojo.GenerateStatementRequest;
+import com.ganta.microservices.statements.pojo.GenerateStatementResponse;
 import com.ganta.microservices.statements.pojo.StatementDownloadDto;
 import com.ganta.microservices.statements.service.StatementService;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,8 @@ public class StatementController {
     private final StatementService statementService;
 
     @PostMapping("/generate")
-    public ResponseEntity<Statement> generateStatement(@RequestBody GenerateStatementRequest request) {
-        Statement statement = statementService.generateStatement(request);
+    public ResponseEntity<GenerateStatementResponse> generateStatement(@RequestBody GenerateStatementRequest request) {
+        GenerateStatementResponse statement = statementService.generateStatement(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(statement);
     }
 

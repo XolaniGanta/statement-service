@@ -2,6 +2,6 @@ package com.ganta.microservices.statements.service;
 
 import com.ganta.microservices.statements.pojo.Transactions;
 
-public interface PdfGenerateService {
+public interface StatementGenerateService {
     byte[] generatePdf(Transactions transactions);
 }

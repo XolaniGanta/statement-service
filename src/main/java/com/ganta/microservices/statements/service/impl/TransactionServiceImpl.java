@@ -1,5 +1,7 @@
-package com.ganta.microservices.statements.service;
+package com.ganta.microservices.statements.service.impl;
 
+import com.ganta.microservices.statements.exception.StatementErrorCode;
+import com.ganta.microservices.statements.exception.StatementException;
 import com.ganta.microservices.statements.pojo.Transactions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
@@ -7,7 +9,6 @@ import org.springframework.stereotype.Service;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.ObjectMapper;
 
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class TransactionServiceImpl {
             );
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load transactions", e);
+            throw new StatementException(StatementErrorCode.TRANSACTIONS_LOAD_FAILED, e);
         }
     }
 
@@ -42,9 +43,7 @@ public class TransactionServiceImpl {
                 .filter(transactions -> periodStart.equals(transactions.getPeriodStart()))
                 .filter(transactions -> periodEnd.equals(transactions.getPeriodEnd()))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException(
-                        "Transactions are not available for this account and period"
-                ));
+                .orElseThrow(() -> new StatementException(StatementErrorCode.TRANSACTIONS_NOT_FOUND));
     }
 }
 

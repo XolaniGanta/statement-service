@@ -35,11 +35,8 @@ public class Statement {
     @Column(name = "period_end")
     private LocalDate periodEnd;
 
-    @Column(name = "s3_bucket")
-    private String s3Bucket;
-
-    @Column(name = "s3_key")
-    private String s3Key;
+    @Column(name = "file_path")
+    private String filePath;
 
     @Column(name = "generated_at")
     private LocalDateTime generatedAt;
