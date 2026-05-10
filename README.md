@@ -95,3 +95,20 @@ GET /api/statements/{statementId}/file?token={jwt}
 Example:
 bash curl -L "[http://localhost:8080/api/statements/7ef6b731-596b-44a2-8df3-2f80f73525e3/file?token=eyJhbGciOiJIUzI1NiJ9](http://localhost:8080/api/statements/7ef6b731-596b-44a2-8df3-2f80f73525e3/file?token=eyJhbGciOiJIUzI1NiJ9)..."
 --output statement.pdf
+
+## Available Test Data
+
+The application includes sample transaction data that can be used to generate and test statements.
+
+Use the following account numbers and statement periods when calling the generate or download endpoints.
+
+| Account Number | Customer ID | Period Start | Period End | Currency | Opening Balance | Closing Balance |
+|---:|---|---|---|---|---:|---:|
+| `100001` | `customer-001` | `2026-03-01` | `2026-03-31` | `ZAR` | `1500.00` | `1720.00` |
+| `100001` | `customer-001` | `2026-04-01` | `2026-04-30` | `ZAR` | `1720.00` | `2100.00` |
+| `100002` | `customer-002` | `2026-02-01` | `2026-02-28` | `ZAR` | `1800.00` | `2100.00` |
+| `100003` | `customer-003` | `2026-01-01` | `2026-01-31` | `ZAR` | `500.00` | `950.00` |
+| `100004` | `customer-004` | `2026-01-01` | `2026-01-31` | `ZAR` | `3000.00` | `2550.00` |
+| `100007` | `customer-001` | `2026-04-01` | `2026-04-30` | `ZAR` | `1720.00` | `2100.00` |
+
+---

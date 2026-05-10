@@ -2,11 +2,13 @@ package com.ganta.microservices.statements.repository;
 
 import com.ganta.microservices.statements.model.Statement;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public interface StatementRepository extends JpaRepository<Statement, Long> {
 
     Optional<Statement> findByAccountNumberAndPeriodStartAndPeriodEnd(

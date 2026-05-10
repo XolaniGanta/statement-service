@@ -1,6 +1,5 @@
 package com.ganta.microservices.statements.controller;
 
-import com.ganta.microservices.statements.model.Statement;
 import com.ganta.microservices.statements.pojo.GenerateStatementRequest;
 import com.ganta.microservices.statements.pojo.GenerateStatementResponse;
 import com.ganta.microservices.statements.pojo.StatementDownloadDto;
